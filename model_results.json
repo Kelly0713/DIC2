@@ -1,0 +1,128 @@
+{
+  "intercept": 54028.03959405855,
+  "coefficients": {
+    "State_Florida": 938.7930061484353,
+    "State_New_York": 6.987759966961395,
+    "RD_Spend": 0.805630063716976,
+    "Administration": -0.06878788228041097,
+    "Marketing_Spend": 0.029855442922038025
+  },
+  "metrics": {
+    "r2": 0.8987266414319833,
+    "mae": 6961.477813275563,
+    "mse": 82010363.04501392,
+    "rmse": 9055.957323497827
+  },
+  "test_samples": [
+    {
+      "index": 13,
+      "rd": 91992.39,
+      "admin": 135495.07,
+      "marketing": 252664.93,
+      "state": "California",
+      "actual": 134307.35,
+      "predicted": 126362.87908251514,
+      "error": 7944.470917484869,
+      "abs_error": 7944.470917484869
+    },
+    {
+      "index": 39,
+      "rd": 38558.51,
+      "admin": 82982.09,
+      "marketing": 174999.3,
+      "state": "California",
+      "actual": 81005.76,
+      "predicted": 84608.45383643435,
+      "error": -3602.6938364343514,
+      "abs_error": 3602.6938364343514
+    },
+    {
+      "index": 30,
+      "rd": 61994.48,
+      "admin": 115641.28,
+      "marketing": 91131.24,
+      "state": "Florida",
+      "actual": 99937.59,
+      "predicted": 99677.49425154628,
+      "error": 260.09574845372117,
+      "abs_error": 260.09574845372117
+    },
+    {
+      "index": 45,
+      "rd": 1000.23,
+      "admin": 124153.04,
+      "marketing": 1903.93,
+      "state": "New York",
+      "actual": 64926.08,
+      "predicted": 46357.460685824546,
+      "error": 18568.619314175456,
+      "abs_error": 18568.619314175456
+    },
+    {
+      "index": 17,
+      "rd": 94657.16,
+      "admin": 145077.58,
+      "marketing": 282574.31,
+      "state": "New York",
+      "actual": 125370.37,
+      "predicted": 128750.48288496587,
+      "error": -3380.1128849658708,
+      "abs_error": 3380.1128849658708
+    },
+    {
+      "index": 48,
+      "rd": 542.05,
+      "admin": 51743.15,
+      "marketing": 0.0,
+      "state": "New York",
+      "actual": 35673.41,
+      "predicted": 50912.417419045654,
+      "error": -15239.00741904565,
+      "abs_error": 15239.00741904565
+    },
+    {
+      "index": 26,
+      "rd": 75328.87,
+      "admin": 144135.98,
+      "marketing": 134050.07,
+      "state": "Florida",
+      "actual": 105733.54,
+      "predicted": 109741.35032700331,
+      "error": -4007.810327003317,
+      "abs_error": 4007.810327003317
+    },
+    {
+      "index": 25,
+      "rd": 64664.71,
+      "admin": 139553.16,
+      "marketing": 137962.62,
+      "state": "California",
+      "actual": 107404.34,
+      "predicted": 100643.24281644379,
+      "error": 6761.097183556209,
+      "abs_error": 6761.097183556209
+    },
+    {
+      "index": 32,
+      "rd": 63408.86,
+      "admin": 129219.61,
+      "marketing": 46085.25,
+      "state": "California",
+      "actual": 97427.84,
+      "predicted": 97599.2757460016,
+      "error": -171.43574600160355,
+      "abs_error": 171.43574600160355
+    },
+    {
+      "index": 19,
+      "rd": 86419.7,
+      "admin": 153514.11,
+      "marketing": 0.0,
+      "state": "New York",
+      "actual": 122776.86,
+      "predicted": 113097.42524436541,
+      "error": 9679.43475563459,
+      "abs_error": 9679.43475563459
+    }
+  ]
+}

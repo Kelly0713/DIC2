@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>50 Startups 多元線性迴歸實戰平台 (CRISP-DM 作業全方位教學與互動模擬)</title>
+  <meta name="description" content="50 Startups 機器學習作業詳解與互動平台，應用 CRISP-DM 6 大步驟完成多元線性迴歸 (Multiple Linear Regression)，提供即時利潤預測模擬器、散佈圖視覺化、完整程式碼與作業報告模板。">
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">50 Startups AI Lab</span>
+          <span class="brand-badge">CRISP-DM 多元線性迴歸</span>
+        </div>
+      </div>
+
+      <nav class="nav-tabs" role="tablist">
+        <button class="nav-tab active" data-tab="tab-predictor" id="nav-btn-predictor" role="tab" aria-selected="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          利潤預測模擬器
+        </button>
+        <button class="nav-tab" data-tab="tab-crisp" id="nav-btn-crisp" role="tab" aria-selected="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+          CRISP-DM 6 步驟詳解
+        </button>
+        <button class="nav-tab" data-tab="tab-charts" id="nav-btn-charts" role="tab" aria-selected="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          模型評估與視覺化
+        </button>
+        <button class="nav-tab" data-tab="tab-data" id="nav-btn-data" role="tab" aria-selected="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          50 筆資料庫檢視
+        </button>
+        <button class="nav-tab" data-tab="tab-code" id="nav-btn-code" role="tab" aria-selected="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          作業代碼與滿分指南
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <button id="theme-toggle-btn" class="icon-btn" title="切換深色/淺色主題" aria-label="Toggle Theme">
+          <svg id="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg id="theme-icon-sun" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
+        <a href="startup_regression.py" download="startup_regression.py" class="btn btn-outline" id="btn-download-script" title="下載 Python 實作腳本">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          下載 Python 檔
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Hero & Metrics Banner -->
+  <main class="main-content">
+    <section class="hero-section">
+      <!-- Dataset Mode Dropdown Selector -->
+      <div class="dataset-mode-bar">
+        <div class="dataset-mode-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>
+          選擇分析模式：
+        </div>
+        <div class="dataset-select-wrap">
+          <select id="dataset-mode-select" class="dataset-mode-select">
+            <option value="ds1">📊 Dataset 1 — MLR 多元線性迴歸 (harimittapalli)</option>
+            <option value="ds2">🔬 Dataset 2 — Forward Selection 前向特徵選擇 (GaneshSparkz)</option>
+            <option value="custom">✏️ 自訂資料輸入 — 輸入資料並即時預測</option>
+          </select>
+          <svg class="select-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="dataset-source-badge" id="dataset-source-badge">
+          來源: github.com/harimittapalli
+        </div>
+      </div>
+
+      <div class="hero-badge" id="hero-badge-text">Kaggle 經典題目實作 • CRISP-DM 框架示範</div>
+      <h1 class="hero-title" id="hero-title-text">
+        50 Startups <span class="gradient-text">多元線性迴歸</span> 實戰分析平台
+      </h1>
+      <p class="hero-subtitle" id="hero-subtitle-text">
+        探索 50 家美國新創公司的研發、行政、行銷開銷與所在地，建立 Multiple Linear Regression 機器學習模型預測 Profit，並掌握避開虛擬變數陷阱 (Dummy Variable Trap) 的關鍵技巧。
+      </p>
+
+      <!-- KPI Metrics Cards Grid (Dynamic) -->
+      <div class="kpi-grid" id="kpi-grid-ds1">
+        <div class="kpi-card">
+          <div class="kpi-icon icon-cyan"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></div>
+          <div class="kpi-info"><span class="kpi-label">判定係數 R² Score</span><span class="kpi-value">0.8987</span><span class="kpi-desc">模型可解釋 89.87% 的利潤變異</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-indigo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg></div>
+          <div class="kpi-info"><span class="kpi-label">平均絕對誤差 (MAE)</span><span class="kpi-value">$6,961</span><span class="kpi-desc">測試集平均預測誤差僅約 $6.9K</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+          <div class="kpi-info"><span class="kpi-label">均方根誤差 (RMSE)</span><span class="kpi-value">$9,056</span><span class="kpi-desc">懲罰大誤差後的代表性偏差</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+          <div class="kpi-info"><span class="kpi-label">樣本資料配置</span><span class="kpi-value">50 家公司</span><span class="kpi-desc">40 筆訓練集 (80%) / 10 筆測試集 (20%)</span></div>
+        </div>
+      </div>
+
+      <!-- DS2: Forward Selection KPI -->
+      <div class="kpi-grid hidden" id="kpi-grid-ds2">
+        <div class="kpi-card">
+          <div class="kpi-icon icon-cyan"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></div>
+          <div class="kpi-info"><span class="kpi-label">最佳 R² (2 特徵)</span><span class="kpi-value">0.9474</span><span class="kpi-desc">R&D + Marketing 2 特徵最優</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-indigo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg></div>
+          <div class="kpi-info"><span class="kpi-label">最佳 RMSE (2 特徵)</span><span class="kpi-value">$8,199</span><span class="kpi-desc">前向選擇最低均方根誤差</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+          <div class="kpi-info"><span class="kpi-label">第一入選特徵</span><span class="kpi-value">R&D Spend</span><span class="kpi-desc">最強利潤預測能力 (r = 0.97)</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg></div>
+          <div class="kpi-info"><span class="kpi-label">資料集來源</span><span class="kpi-value">GaneshSparkz</span><span class="kpi-desc">random_state=0, test_size=20%</span></div>
+        </div>
+      </div>
+
+      <!-- Custom Input KPI -->
+      <div class="kpi-grid hidden" id="kpi-grid-custom">
+        <div class="kpi-card">
+          <div class="kpi-icon icon-cyan"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+          <div class="kpi-info"><span class="kpi-label">自訂資料筆數</span><span class="kpi-value" id="custom-kpi-count">0 筆</span><span class="kpi-desc">已加入自訂訓練資料列</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-indigo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></div>
+          <div class="kpi-info"><span class="kpi-label">自訂模型 R²</span><span class="kpi-value" id="custom-kpi-r2">—</span><span class="kpi-desc">以 OLS 線性迴歸計算</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+          <div class="kpi-info"><span class="kpi-label">自訂模型 RMSE</span><span class="kpi-value" id="custom-kpi-rmse">—</span><span class="kpi-desc">自訂資料訓練後的誤差</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon icon-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></div>
+          <div class="kpi-info"><span class="kpi-label">輸入預測情境</span><span class="kpi-value" id="custom-kpi-pred">—</span><span class="kpi-desc">根據自訂模型即時預測</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 1: 預測模擬器 (Interactive Profit Predictor) -->
+    <section class="tab-pane active" id="tab-predictor" role="tabpanel">
+      <div class="grid-2col">
+        <!-- Controls Panel -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="step-tag">即時預測</span>
+              <h2 class="card-title">新創公司營運支出參數設定</h2>
+            </div>
+            <div class="preset-dropdown-wrap">
+              <label for="preset-select" class="sr-only">選擇範例情境</label>
+              <select id="preset-select" class="custom-select" title="選擇預設情境">
+                <option value="custom">⚡ 自訂輸入參數</option>
+                <option value="high-tech">🚀 高研發科技獨角獸</option>
+                <option value="balanced">⚖️ 平衡型成長新創</option>
+                <option value="marketing-heavy">📢 行銷推廣導向型</option>
+                <option value="lean">🌱 精實低預算種子期</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card-body form-grid">
+            <!-- R&D Spend Slider -->
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="input-rd" class="control-label">
+                  <span class="dot dot-indigo"></span>
+                  研發支出 (R&D Spend)
+                </label>
+                <div class="currency-input-badge">
+                  <span>$</span>
+                  <input type="number" id="input-rd" min="0" max="250000" step="1000" value="160000">
+                </div>
+              </div>
+              <input type="range" id="slider-rd" min="0" max="250000" step="1000" value="160000" class="custom-range range-indigo">
+              <div class="range-limits">
+                <span>$0</span>
+                <span class="highlight-hint">係數: +0.8056 (最大影響力 ⭐)</span>
+                <span>$250,000</span>
+              </div>
+            </div>
+
+            <!-- Administration Slider -->
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="input-admin" class="control-label">
+                  <span class="dot dot-amber"></span>
+                  行政管理支出 (Administration)
+                </label>
+                <div class="currency-input-badge">
+                  <span>$</span>
+                  <input type="number" id="input-admin" min="30000" max="200000" step="1000" value="130000">
+                </div>
+              </div>
+              <input type="range" id="slider-admin" min="30000" max="200000" step="1000" value="130000" class="custom-range range-amber">
+              <div class="range-limits">
+                <span>$30,000</span>
+                <span class="highlight-hint">係數: -0.0688 (微幅負相關)</span>
+                <span>$200,000</span>
+              </div>
+            </div>
+
+            <!-- Marketing Spend Slider -->
+            <div class="control-group">
+              <div class="control-label-row">
+                <label for="input-marketing" class="control-label">
+                  <span class="dot dot-cyan"></span>
+                  行銷宣傳支出 (Marketing Spend)
+                </label>
+                <div class="currency-input-badge">
+                  <span>$</span>
+                  <input type="number" id="input-marketing" min="0" max="500000" step="5000" value="300000">
+                </div>
+              </div>
+              <input type="range" id="slider-marketing" min="0" max="500000" step="5000" value="300000" class="custom-range range-cyan">
+              <div class="range-limits">
+                <span>$0</span>
+                <span class="highlight-hint">係數: +0.0299 (正向輔助)</span>
+                <span>$500,000</span>
+              </div>
+            </div>
+
+            <!-- State Selection (One-Hot Encoded) -->
+            <div class="control-group">
+              <label class="control-label">
+                <span class="dot dot-emerald"></span>
+                註冊所在地 (State - 虛擬變數編碼)
+              </label>
+              <div class="state-segmented-control" role="radiogroup">
+                <label class="state-option active" id="state-california">
+                  <input type="radio" name="state-choice" value="California" checked>
+                  <span class="state-title">California (加州)</span>
+                  <span class="state-sub">基準組 (Drop First)</span>
+                </label>
+                <label class="state-option" id="state-florida">
+                  <input type="radio" name="state-choice" value="Florida">
+                  <span class="state-title">Florida (佛州)</span>
+                  <span class="state-sub">+ $938.79</span>
+                </label>
+                <label class="state-option" id="state-new-york">
+                  <input type="radio" name="state-choice" value="New York">
+                  <span class="state-title">New York (紐約)</span>
+                  <span class="state-sub">+ $6.99</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prediction Result Panel -->
+        <div class="card glass-card prediction-result-card">
+          <div class="card-header">
+            <span class="step-tag tag-success">模型預估結果</span>
+            <h2 class="card-title">預期年利潤 (Predicted Profit)</h2>
+          </div>
+
+          <div class="prediction-display">
+            <div class="predicted-currency-label">預估利潤金額</div>
+            <div class="predicted-amount" id="predicted-profit-val">$182,943.06</div>
+            <div class="predicted-sub" id="prediction-confidence-badge">
+              <span class="confidence-dot"></span>
+              95% 預測信心區間: <strong id="pred-interval">$165,193 ~ $200,693</strong>
+            </div>
+          </div>
+
+          <!-- Contribution Breakdown Waterfall -->
+          <div class="waterfall-box">
+            <h3 class="waterfall-title">各項要素利潤貢獻度拆解 (Contribution Breakdown)</h3>
+            <div class="breakdown-list">
+              <div class="breakdown-item">
+                <span class="item-name">基礎截距常數 (β₀)</span>
+                <span class="item-calc">基準起步利潤</span>
+                <span class="item-val val-pos" id="wf-intercept">+$54,028.04</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="item-name">研發支出貢獻 (β₃ × R&D)</span>
+                <span class="item-calc" id="wf-rd-calc">$160,000 × 0.8056</span>
+                <span class="item-val val-pos" id="wf-rd-val">+$128,896.00</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="item-name">行政支出扣抵 (β₄ × Admin)</span>
+                <span class="item-calc" id="wf-admin-calc">$130,000 × -0.0688</span>
+                <span class="item-val val-neg" id="wf-admin-val">-$8,942.42</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="item-name">行銷支出貢獻 (β₅ × Marketing)</span>
+                <span class="item-calc" id="wf-marketing-calc">$300,000 × 0.0299</span>
+                <span class="item-val val-pos" id="wf-marketing-val">+$8,956.63</span>
+              </div>
+              <div class="breakdown-item">
+                <span class="item-name">州別區位加成 (β₁ / β₂)</span>
+                <span class="item-calc" id="wf-state-calc">California (基準組)</span>
+                <span class="item-val" id="wf-state-val">+$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Business Insight Alert -->
+          <div class="alert alert-info">
+            <div class="alert-icon">💡</div>
+            <div class="alert-content">
+              <strong>創投與經營決策建議：</strong>
+              <p>研發支出每增加 1 美元，利潤平均激增 <strong>$0.81 美元</strong>，是拉動獲利最直接的引擎；相較之下，行政成本係數為負（-0.0688），顯示過度膨脹的官僚組織與人事費用無法轉換為實質利潤。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: CRISP-DM 6 步驟全攻略 (CRISP-DM Stages Walkthrough) -->
+    <section class="tab-pane" id="tab-crisp" role="tabpanel">
+      <div class="crisp-intro-card card glass-card">
+        <h2 class="section-title">什麼是 CRISP-DM？</h2>
+        <p class="section-desc">
+          <strong>CRISP-DM (Cross-Industry Standard Process for Data Mining)</strong> 是全球資料科學與商業分析最權威、最普及的標準流程。本作業將 50 Startups 多元線性迴歸問題嚴格對應至 6 大經典階段：
+        </p>
+      </div>
+
+      <div class="crisp-timeline">
+        <!-- Step 1 -->
+        <div class="crisp-step-card">
+          <div class="step-num-badge">階段 1</div>
+          <div class="step-header">
+            <h3 class="step-title">Business Understanding (商業理解)</h3>
+            <span class="step-status done">完成</span>
+          </div>
+          <div class="step-body">
+            <p><strong>商業痛點：</strong> 創投基金 (Venture Capital) 與新創天使投資人每年收到數百家初創公司的融資提案，需要評估「錢投在哪裡回報率最高？」</p>
+            <p><strong>專案目標：</strong> 建立以 R&D Spend、Administration、Marketing Spend 與 State 為特徵的多元迴歸模型，預測年利潤 (Profit)，為投資決策與預算配置提供量化依據。</p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="crisp-step-card">
+          <div class="step-num-badge">階段 2</div>
+          <div class="step-header">
+            <h3 class="step-title">Data Acquisition & Understanding (資料擷取與理解)</h3>
+            <span class="step-status done">完成</span>
+          </div>
+          <div class="step-body">
+            <p><strong>資料擷取機制：</strong> 使用 Python <code>requests.get()</code> 從指定 GitHub 網址下載 <code>50_Startups.csv</code>，嚴格檢查 <code>response.status_code == 200</code> 確保通訊無誤，再由 <code>io.StringIO</code> 解析為 Pandas DataFrame。</p>
+            <div class="code-pill">
+              <code>response = requests.get(url); if response.status_code == 200: data = pd.read_csv(io.StringIO(response.text))</code>
+            </div>
+            <p><strong>資料結構探索：</strong> 共有 50 筆觀察值、5 個欄位（4 個數值型、1 個類別型），且缺失值數量為 0（無需填補缺漏值）。</p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="crisp-step-card highlight-border">
+          <div class="step-num-badge badge-warning">階段 3 關鍵</div>
+          <div class="step-header">
+            <h3 class="step-title">Data Preparation (資料準備 - 避開虛擬變數陷阱)</h3>
+            <span class="step-status done">完成</span>
+          </div>
+          <div class="step-body">
+            <p><strong>1. 特徵與目標切分：</strong> 將 <code>Profit</code> 設為目標向量 <code>y</code>，其餘 4 欄設為特徵矩陣 <code>X</code>。</p>
+            <p><strong>2. 類別資料編碼 (OneHotEncoder)：</strong> <code>State</code> 欄位包含 California、Florida、New York 三個字串，需轉為數值 dummy variables。</p>
+            <div class="alert alert-warning">
+              <div class="alert-icon">⚠️</div>
+              <div class="alert-content">
+                <strong>何謂虛擬變數陷阱 (Dummy Variable Trap)？</strong>
+                <p>若 State 有 3 個類別，若同時編碼為 3 個欄位，則 <code>D1 + D2 + D3 = 1</code>，會與線性迴歸公式裡的常數截距項產生<strong>完全多重共線性 (Perfect Multicollinearity)</strong>，導致特徵矩陣 $X^T X$ 不可逆無法計算。因此必須使用 <code>OneHotEncoder(drop='first')</code> 丟棄第一個基準欄位！</p>
+              </div>
+            </div>
+            <p><strong>3. 訓練/測試集切分：</strong> 使用 <code>train_test_split(..., test_size=0.2, random_state=42)</code> 切割出 40 筆訓練集與 10 筆測試集。</p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="crisp-step-card">
+          <div class="step-num-badge">階段 4</div>
+          <div class="step-header">
+            <h3 class="step-title">Modeling (模型建置 - Multiple Linear Regression)</h3>
+            <span class="step-status done">完成</span>
+          </div>
+          <div class="step-body">
+            <p>使用 <code>sklearn.linear_model.LinearRegression</code> 在訓練集 $(X_{train}, y_{train})$ 進行最小平方法 (OLS) 擬合求解。</p>
+            <div class="math-formula-box">
+              <span class="formula-title">擬合出的迴歸方程式 (Regression Equation)：</span>
+              <code>Profit = 54028.04 + 938.79 × State_Florida + 6.99 × State_NewYork + 0.8056 × R&D - 0.0688 × Admin + 0.0299 × Marketing</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="crisp-step-card">
+          <div class="step-num-badge">階段 5</div>
+          <div class="step-header">
+            <h3 class="step-title">Evaluation (模型評估 - 4 大指標與殘差分析)</h3>
+            <span class="step-status done">完成</span>
+          </div>
+          <div class="step-body">
+            <p>在未曾參與訓練的 10 筆測試集上進行預測，檢驗泛化能力：</p>
+            <div class="metrics-table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>指標名稱</th>
+                    <th>公式定義</th>
+                    <th>本模型數值</th>
+                    <th>評價含義</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>R-squared (R²)</strong></td>
+                    <td>$1 - \frac{\sum (y - \hat{y})^2}{\sum (y - \bar{y})^2}$</td>
+                    <td><span class="badge badge-success">0.8987</span></td>
+                    <td>極佳！近 90% 利潤可由支出與州別解釋</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Mean Absolute Error (MAE)</strong></td>
+                    <td>$\frac{1}{n}\sum |y - \hat{y}|$</td>
+                    <td><strong>$6,961.48</strong></td>
+                    <td>平均預測偏差不到 7 千美元</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Mean Squared Error (MSE)</strong></td>
+                    <td>$\frac{1}{n}\sum (y - \hat{y})^2$</td>
+                    <td><strong>82,010,363</strong></td>
+                    <td>均方誤差，用以進一步計算 RMSE</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Root Mean Squared Error (RMSE)</strong></td>
+                    <td>$\sqrt{\text{MSE}}$</td>
+                    <td><strong>$9,055.96</strong></td>
+                    <td>對離群大誤差更具敏感度</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="crisp-step-card">
+          <div class="step-num-badge">階段 6</div>
+          <div class="step-header">
+            <h3 class="step-title">Deployment (部署與網頁應用)</h3>
+            <span class="step-status done">完成</span>
+          </div>
+          <div class="step-body">
+            <p>將模型封裝成可重複調用的預測介面，並構建您當前瀏覽的這個<strong>互動式 Web 應用程式</strong>，讓投資人與管理層隨時拉動滑桿獲得即時利潤預測與視覺化決策支援！</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: 模型評估與視覺化 (Evaluation & Charts) -->
+    <section class="tab-pane" id="tab-charts" role="tabpanel">
+      <div class="grid-2col">
+        <!-- Chart 1: Actual vs. Predicted Profit -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="step-tag tag-primary">核心作業要求</span>
+              <h2 class="card-title">Actual vs. Predicted Profit 散佈圖</h2>
+            </div>
+            <span class="badge badge-success">R² = 0.8987</span>
+          </div>
+          <div class="card-body">
+            <p class="chart-caption">
+              藍點代表 10 家測試集新創公司，<strong>紅色虛線 (y = x)</strong> 代表完美預測線。資料點緊密貼合紅線，證明模型擬合度極佳。
+            </p>
+            <div class="chart-container">
+              <canvas id="actualVsPredChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 2: Feature Correlation & Impact -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="step-tag tag-cyan">特徵影響力</span>
+              <h2 class="card-title">各支出項目與利潤相關性 (Correlation)</h2>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="chart-caption">
+              皮爾森相關係數分析：研發支出 (R&D Spend) 與利潤具有高達 <strong>0.97</strong> 的超強正相關！
+            </p>
+            <div class="chart-container">
+              <canvas id="featureImportanceChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 3: State Average Profit Comparison -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="step-tag tag-emerald">地理分佈</span>
+              <h2 class="card-title">各州新創公司平均利潤與支出對比</h2>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="stateAnalysisChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 4: Residuals Error Plot -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="step-tag tag-amber">誤差檢定</span>
+              <h2 class="card-title">測試集預測殘差分佈 (Residuals = Actual - Pred)</h2>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="residualsChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test Set Detailed Comparison Table -->
+      <div class="card glass-card margin-top-lg">
+        <div class="card-header">
+          <h2 class="card-title">測試集 10 家公司實際值 vs. 預測值對照明細</h2>
+          <span class="badge badge-info">Random State = 42</span>
+        </div>
+        <div class="card-body table-responsive">
+          <table class="data-table" id="test-comparison-table">
+            <thead>
+              <tr>
+                <th>樣本編號</th>
+                <th>所在州別 (State)</th>
+                <th>研發支出 (R&D)</th>
+                <th>行政支出 (Admin)</th>
+                <th>行銷支出 (Marketing)</th>
+                <th>實際利潤 (Actual)</th>
+                <th>預測利潤 (Predicted)</th>
+                <th>絕對誤差 (Error)</th>
+                <th>準確率評估</th>
+              </tr>
+            </thead>
+            <tbody id="test-table-body">
+              <!-- Dynamically populated by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: 完整 50 筆資料集檢視 (Dataset Explorer) -->
+    <section class="tab-pane" id="tab-data" role="tabpanel">
+      <div class="card glass-card">
+        <div class="card-header flex-between">
+          <div class="card-title-group">
+            <h2 class="card-title">50_Startups.csv 原始資料集檢視與檢索</h2>
+            <p class="card-desc">資料來源：Kaggle / GitHub 官方倉庫，包含 50 家新創公司財務營運數據。</p>
+          </div>
+          <div class="data-actions">
+            <button class="btn btn-primary" id="btn-refetch-github">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+              從 GitHub 即時連線擷取
+            </button>
+            <button class="btn btn-outline" id="btn-export-csv">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              匯出 CSV 檔
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-toolbar">
+          <div class="search-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="dataset-search" placeholder="搜尋金額或州別 (New York, California, Florida)...">
+          </div>
+
+          <div class="filter-chips">
+            <button class="chip active" data-state="ALL">全部 (50)</button>
+            <button class="chip" data-state="New York">New York (17)</button>
+            <button class="chip" data-state="California">California (17)</button>
+            <button class="chip" data-state="Florida">Florida (16)</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="dataset-table">
+            <thead>
+              <tr>
+                <th data-sort="id">#</th>
+                <th data-sort="rd">研發支出 (R&D Spend)</th>
+                <th data-sort="admin">行政管理支出 (Administration)</th>
+                <th data-sort="marketing">行銷宣傳支出 (Marketing Spend)</th>
+                <th data-sort="state">註冊州別 (State)</th>
+                <th data-sort="profit">實際利潤 (Profit)</th>
+              </tr>
+            </thead>
+            <tbody id="dataset-tbody">
+              <!-- Dynamically populated by app.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Summary Statistics Row -->
+        <div class="summary-stats-box">
+          <h3 class="stats-title">資料集敘述統計摘要 (Descriptive Statistics)</h3>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-name">平均利潤 (Mean Profit)</span>
+              <span class="stat-num">$112,012.64</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-name">平均研發支出 (Mean R&D)</span>
+              <span class="stat-num">$73,721.62</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-name">平均行政支出 (Mean Admin)</span>
+              <span class="stat-num">$121,344.64</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-name">平均行銷支出 (Mean Mktg)</span>
+              <span class="stat-num">$211,025.10</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: 作業代碼與滿分指南 (Code & Homework Guide) -->
+    <section class="tab-pane" id="tab-code" role="tabpanel">
+      <div class="grid-2col">
+        <!-- Homework Checklist & Answering Guide -->
+        <div class="card glass-card">
+          <div class="card-header">
+            <span class="step-tag tag-warning">作業得分要點</span>
+            <h2 class="card-title">作業步驟檢核清單與觀念問答</h2>
+          </div>
+          <div class="card-body">
+            <div class="checklist">
+              <div class="check-item done">
+                <span class="check-box">✓</span>
+                <div class="check-text">
+                  <strong>1. Data Acquisition (資料擷取)</strong>
+                  <p>使用 <code>requests.get()</code> 取得 CSV，驗證 <code>status_code == 200</code>，用 <code>io.StringIO</code> 轉入 DataFrame，印出 <code>head()</code> 與 <code>columns</code>。</p>
+                </div>
+              </div>
+
+              <div class="check-item done">
+                <span class="check-box">✓</span>
+                <div class="check-text">
+                  <strong>2. Data Preparation (資料前處理)</strong>
+                  <p>分離 <code>X</code> 與 <code>y</code>；使用 <code>ColumnTransformer</code> 與 <code>OneHotEncoder(drop='first')</code> 避開虛擬變數陷阱；以 <code>train_test_split</code> 切分 80/20。</p>
+                </div>
+              </div>
+
+              <div class="check-item done">
+                <span class="check-box">✓</span>
+                <div class="check-text">
+                  <strong>3. Modeling (模型建置)</strong>
+                  <p>實例化 <code>LinearRegression()</code> 並在訓練集擬合 <code>fit(X_train, y_train)</code>。</p>
+                </div>
+              </div>
+
+              <div class="check-item done">
+                <span class="check-box">✓</span>
+                <div class="check-text">
+                  <strong>4. Evaluation (評估指標)</strong>
+                  <p>計算 <code>r2_score</code>、<code>mean_absolute_error</code>、<code>mean_squared_error</code> 與 <code>RMSE (np.sqrt)</code>。</p>
+                </div>
+              </div>
+
+              <div class="check-item done">
+                <span class="check-box">✓</span>
+                <div class="check-text">
+                  <strong>5. Visualization (散佈圖繪製)</strong>
+                  <p>使用 <code>matplotlib.pyplot</code> 繪製 Actual vs. Predicted 散佈圖，包含 X/Y 軸標籤、圖表標題與完美擬合對角線。</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="faq-box margin-top-md">
+              <h3 class="faq-heading">常見考試/口試問答 (Interview & Exam Prep)：</h3>
+              <div class="faq-item">
+                <p class="faq-q">Q: 為什麼必須使用 <code>drop='first'</code>？不加會怎樣？</p>
+                <p class="faq-a">A: 若不 drop 第一個欄位，三個州別虛擬變數加總恆等於 1，與常數項 (Intercept) 產生多重共線性 (Multicollinearity)。雖然現代 Python 求解器 (SVD) 不會直接報錯崩潰，但係數估計值將失去統計意義，無法正確解釋各州別的真實效應。</p>
+              </div>
+              <div class="faq-item">
+                <p class="faq-q">Q: 為什麼行政支出 (Administration) 的係數是負數 (-0.0688)？</p>
+                <p class="faq-a">A: 這說明行政管理等官僚行政開銷在控制了研發與行銷投入後，對利潤並無正面提升作用，甚至代表公司體系冗員較多、運作效率較低。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Python Code Viewer -->
+        <div class="card glass-card">
+          <div class="card-header flex-between">
+            <div class="card-title-group">
+              <span class="step-tag tag-primary">Python 完整腳本</span>
+              <h2 class="card-title">startup_regression.py</h2>
+            </div>
+            <div class="code-actions">
+              <button class="btn btn-sm btn-outline" id="btn-copy-code">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span id="copy-text">複製代碼</span>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="code-viewer-container">
+              <pre class="code-block"><code id="python-code-display"># 請稍候，正在載入 Python 原始碼...</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- TAB DS2: Forward Selection (GaneshSparkz) -->
+  <section class="tab-pane ds-pane" id="tab-ds2" role="tabpanel">
+    <div class="card glass-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <span class="step-tag tag-cyan">Dataset 2 — GaneshSparkz</span>
+          <h2 class="card-title">Forward Selection 前向特徵逐步選擇法結果</h2>
+          <p class="card-desc">來源：<code>gist.github.com/GaneshSparkz</code>｜random_state=0, test_size=0.2｜以 <code>pd.get_dummies(drop_first=True)</code> 處理 State 欄位</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- Forward Selection Markdown-like Table -->
+        <div class="fs-table-wrap">
+          <table class="data-table fs-result-table" id="fs-result-table">
+            <thead>
+              <tr>
+                <th>特徵數量<br>(Num Features)</th>
+                <th>本輪新增特徵<br>(Added Feature)</th>
+                <th>已選入特徵組合<br>(Selected Features So Far)</th>
+                <th>RMSE ↓</th>
+                <th>R-squared ↑</th>
+                <th>評分</th>
+              </tr>
+            </thead>
+            <tbody id="fs-table-body"></tbody>
+          </table>
+        </div>
+
+        <div class="alert alert-info margin-top-md">
+          <div class="alert-icon">🔬</div>
+          <div class="alert-content">
+            <strong>前向選擇法 (Forward Selection) 結論：</strong>
+            <p>當僅納入 <strong>R&D Spend</strong> 與 <strong>Marketing Spend</strong> 兩個特徵時，模型表現最佳 (RMSE=$8,199, R²=0.9474)。繼續加入更多特徵（State dummy, Administration）反而造成 RMSE 上升，顯示這兩個變數對於 GaneshSparkz 版本資料集存在輕微過擬合現象。</p>
+          </div>
+        </div>
+
+        <!-- RMSE / R² Line Chart -->
+        <div class="grid-2col margin-top-lg">
+          <div class="card glass-card">
+            <h3 class="card-title" style="font-size:1rem; margin-bottom:0.8rem;">RMSE 隨特徵數量的變化趨勢</h3>
+            <div class="chart-container"><canvas id="fsRmseChart"></canvas></div>
+          </div>
+          <div class="card glass-card">
+            <h3 class="card-title" style="font-size:1rem; margin-bottom:0.8rem;">R-squared 隨特徵數量的變化趨勢</h3>
+            <div class="chart-container"><canvas id="fsR2Chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Markdown Output Box -->
+    <div class="card glass-card margin-top-lg">
+      <div class="card-header flex-between">
+        <div class="card-title-group">
+          <span class="step-tag tag-primary">Markdown 格式輸出</span>
+          <h2 class="card-title">Forward Selection 結果表 (tabulate pipe 格式)</h2>
+        </div>
+        <button class="btn btn-sm btn-outline" id="btn-copy-fs-md">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          複製 Markdown
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="code-viewer-container">
+          <pre class="code-block" id="fs-markdown-output"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB Custom: 自訂資料輸入 -->
+  <section class="tab-pane ds-pane" id="tab-custom" role="tabpanel">
+    <div class="grid-2col">
+      <!-- Input Form -->
+      <div class="card glass-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="step-tag tag-warning">自訂輸入</span>
+            <h2 class="card-title">逐筆新增訓練資料</h2>
+            <p class="card-desc">輸入每家新創公司的各項支出，按「加入訓練集」後模型自動重新訓練。</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Quick Fill Row -->
+          <div class="custom-quick-fill">
+            <span class="quick-fill-label">快速填入範例：</span>
+            <button class="chip" onclick="customQuickFill(165349.2,136897.8,471784.1,'New York',192261.83)">高研發公司 #1</button>
+            <button class="chip" onclick="customQuickFill(1000.23,124153.04,1903.93,'New York',64926.08)">低研發公司 #46</button>
+            <button class="chip" onclick="customQuickFill(75328.87,144135.98,134050.07,'Florida',105733.54)">佛州中型 #27</button>
+          </div>
+
+          <div class="form-grid" style="margin-top:1rem;">
+            <div class="control-group">
+              <div class="control-label-row">
+                <label class="control-label"><span class="dot dot-indigo"></span>研發支出 (R&D Spend)</label>
+                <div class="currency-input-badge"><span>$</span><input type="number" id="ci-rd" placeholder="0" min="0" step="100"></div>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="control-label-row">
+                <label class="control-label"><span class="dot dot-amber"></span>行政管理支出 (Administration)</label>
+                <div class="currency-input-badge"><span>$</span><input type="number" id="ci-admin" placeholder="0" min="0" step="100"></div>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="control-label-row">
+                <label class="control-label"><span class="dot dot-cyan"></span>行銷宣傳支出 (Marketing Spend)</label>
+                <div class="currency-input-badge"><span>$</span><input type="number" id="ci-marketing" placeholder="0" min="0" step="100"></div>
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label"><span class="dot dot-emerald"></span>所在地 (State)</label>
+              <select id="ci-state" class="custom-select" style="width:100%;padding:0.55rem 1rem;">
+                <option value="California">California (加州)</option>
+                <option value="Florida">Florida (佛州)</option>
+                <option value="New York">New York (紐約)</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <div class="control-label-row">
+                <label class="control-label"><span class="dot dot-emerald"></span>實際利潤 (Profit, 訓練用)</label>
+                <div class="currency-input-badge"><span>$</span><input type="number" id="ci-profit" placeholder="0" min="0" step="100"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="custom-actions">
+            <button class="btn btn-primary" id="btn-add-custom-row" onclick="addCustomRow()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              加入訓練集
+            </button>
+            <button class="btn btn-outline" onclick="clearCustomData()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
+              清空所有資料
+            </button>
+            <button class="btn btn-outline" onclick="loadOriginal50()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.51"></path></svg>
+              載入原始 50 筆
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prediction + Custom Model Result -->
+      <div class="card glass-card prediction-result-card">
+        <div class="card-header">
+          <span class="step-tag tag-success">自訂模型預測</span>
+          <h2 class="card-title">即時利潤預估（使用自訂訓練集）</h2>
+        </div>
+
+        <!-- Predict Input -->
+        <div class="card-body">
+          <p class="chart-caption" style="margin-bottom:1rem;">設定想預測的新公司參數，模型以自訂訓練集求解後即時輸出：</p>
+          <div class="form-grid">
+            <div class="control-group">
+              <div class="control-label-row">
+                <label class="control-label"><span class="dot dot-indigo"></span>預測 R&D</label>
+                <div class="currency-input-badge"><span>$</span><input type="number" id="cp-rd" value="100000" step="1000"></div>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="control-label-row">
+                <label class="control-label"><span class="dot dot-amber"></span>預測 Admin</label>
+                <div class="currency-input-badge"><span>$</span><input type="number" id="cp-admin" value="130000" step="1000"></div>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="control-label-row">
+                <label class="control-label"><span class="dot dot-cyan"></span>預測 Marketing</label>
+                <div class="currency-input-badge"><span>$</span><input type="number" id="cp-marketing" value="200000" step="1000"></div>
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label"><span class="dot dot-emerald"></span>預測 State</label>
+              <select id="cp-state" class="custom-select" style="width:100%;padding:0.55rem 1rem;">
+                <option value="California">California</option>
+                <option value="Florida">Florida</option>
+                <option value="New York">New York</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="runCustomModel()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            執行自訂模型訓練 & 預測
+          </button>
+
+          <div class="prediction-display" style="margin-top:1.4rem;">
+            <div class="predicted-currency-label">自訂模型預測利潤</div>
+            <div class="predicted-amount" id="custom-predict-val" style="font-size:2.4rem;">—</div>
+            <div class="predicted-sub" id="custom-model-status">尚未有足夠訓練資料（至少需 5 筆）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Training Data Table -->
+    <div class="card glass-card margin-top-lg">
+      <div class="card-header flex-between">
+        <h2 class="card-title">自訂訓練資料集明細 <span id="custom-row-count-badge" class="badge badge-info">0 筆</span></h2>
+        <div class="alert alert-info" style="margin:0;padding:0.5rem 0.85rem;">
+          <div class="alert-icon" style="font-size:1rem;">💡</div>
+          <div class="alert-content" style="font-size:0.8rem;">加入資料後點擊「執行自訂模型訓練 & 預測」以更新模型與 KPI 數值。</div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th><th>R&D Spend</th><th>Administration</th><th>Marketing Spend</th><th>State</th><th>Profit (Target)</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="custom-data-tbody">
+            <tr id="custom-empty-row">
+              <td colspan="7" style="text-align:center;color:var(--text-sub);padding:2rem;">尚無資料，請透過上方表單加入或點擊「載入原始 50 筆」</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>© 2026 50 Startups Multiple Linear Regression Project • 專為機器學習作業與商業數據採礦設計</p>
+      <p class="footer-sub">遵循 CRISP-DM 流程規範 • 支援純前端離線運算與即時 GitHub 資料同步</p>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- App Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

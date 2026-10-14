@@ -1,0 +1,57 @@
+[
+  {
+    "numFeatures": 1,
+    "selectedFeatures": [
+      "R&D Spend"
+    ],
+    "addedFeature": "R&D Spend",
+    "rmse": 8274.87,
+    "r2": 0.9465
+  },
+  {
+    "numFeatures": 2,
+    "selectedFeatures": [
+      "R&D Spend",
+      "Marketing Spend"
+    ],
+    "addedFeature": "Marketing Spend",
+    "rmse": 8198.8,
+    "r2": 0.9474
+  },
+  {
+    "numFeatures": 3,
+    "selectedFeatures": [
+      "R&D Spend",
+      "Marketing Spend",
+      "State_New York"
+    ],
+    "addedFeature": "State_New York",
+    "rmse": 8309.06,
+    "r2": 0.946
+  },
+  {
+    "numFeatures": 4,
+    "selectedFeatures": [
+      "R&D Spend",
+      "Marketing Spend",
+      "State_New York",
+      "State_Florida"
+    ],
+    "addedFeature": "State_Florida",
+    "rmse": 8409.92,
+    "r2": 0.9447
+  },
+  {
+    "numFeatures": 5,
+    "selectedFeatures": [
+      "R&D Spend",
+      "Marketing Spend",
+      "State_New York",
+      "State_Florida",
+      "Administration"
+    ],
+    "addedFeature": "Administration",
+    "rmse": 9137.99,
+    "r2": 0.9347
+  }
+]
